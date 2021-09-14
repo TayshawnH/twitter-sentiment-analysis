@@ -2,6 +2,7 @@ import re
 import tweepy
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
@@ -49,13 +50,14 @@ class TwitterClient(object):
             # call twitter api to fetch tweets
             fetched_tweets = tweepy.Cursor(self.api.search, q=query,
                                            include_entities=True,
-                                           until="2021-08-28",
+                                           tweet_mode='extended',
+                                           since="2021-01-01",
                                            lang="en").items(count)
 
             # parsing tweets one by one
             for tweet in fetched_tweets:
-                #  dictionary to store required params of a tweet & saving text of tweet
-                parsed_tweet = {'text': self.clean_tweet(tweet.text)}
+                print(tweet.retweet_count)
+                parsed_tweet = self.clean_tweet(tweet.full_text)
                 # print(tweet.retweet_count)
                 # appending parsed tweet to tweets list
                 if tweet.retweet_count > 0:
@@ -74,12 +76,12 @@ class TwitterClient(object):
 
 def main():
     api = TwitterClient()
-    tweets = api.get_tweets(query="minecraft", count=20)
-    print(tweets)
-    # for idx, tweet in enumerate(tweets):
-    #     # print(idx, tweet["text"])
-    #     with open('games.csv', 'a', newline='') as f:
-    #         f.write("%s\n" % tweet["text"])
+    tweets = api.get_tweets(query="league of legends", count=1500)
+    # print(tweets)
+    for tweet in enumerate(tweets):
+        # print(idx, tweet["text"])
+        with open('data/League.csv', 'a', newline='') as f:
+            f.write("%s\n" % tweet[1])
 
 
 if __name__ == "__main__":
