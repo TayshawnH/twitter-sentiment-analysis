@@ -1,6 +1,6 @@
 import csv
 
-file = open("data/games.csv", "r")
+file = open("data/Apex.csv", "r")
 csv_reader = csv.reader(file)
 
 lists_from_csv = []
