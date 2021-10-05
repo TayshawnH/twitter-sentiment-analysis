@@ -80,7 +80,7 @@ def main():
     # print(tweets)
     for tweet in enumerate(tweets):
         # print(idx, tweet["text"])
-        with open('data/League.csv', 'a', newline='') as f:
+        with open('game_data/League.csv', 'a', newline='') as f:
             f.write("%s\n" % tweet[1])
 
 
