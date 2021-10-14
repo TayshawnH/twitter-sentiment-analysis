@@ -1,5 +1,6 @@
 import pickle
-
+import glob
+import csv
 import pandas as pd
 
 
@@ -37,12 +38,24 @@ if __name__ == "__main__":
     # Loading the models.
     vectoriser, LRmodel = load_models()
 
-    # Text to classify should be in a list.
-    text = ["I hate twitter",
-            "I cannot wait for this Valorant tournament",
-            "I love Minecraft",
-            "I hope all League players disappear",
-            "I think minecraft is a shitty game"]
+    path = './game_data/*.csv'
+    lists_from_csv = []
+    csv_names = []
+    for f in glob.glob(path):
+        csv_names.append(f)
+        file = open(f, "r")
+        csv_reader = csv.reader(file)
+        for row in csv_reader:
+            lists_from_csv.append(row[0])
 
-    df = predict(vectoriser, LRmodel, text)
+    # print(df)
+    # Text to classify should be in a list.
+    # text = ['I hate twitter',
+    #         "I cannot wait for this Valorant tournament",
+    #         "I can't say Minecraft is a good game",
+    #         "I hope all League players disappear",
+    #         "I think minecraft is a shitty game"]
+    #
+    df = predict(vectoriser, LRmodel, lists_from_csv)
     print(df)
+    # print(csv_names)
