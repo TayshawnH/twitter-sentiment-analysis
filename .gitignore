@@ -1,5 +1,7 @@
 .env
 models/LR.pickle
 models/vectoriser-ngram-(1,2).pickle
+models/L1_LR.pickle
+models/elasticnet_LR.pickle
 dataset/processed_tweet_dataset.csv
 
