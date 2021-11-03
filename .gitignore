@@ -1,6 +1,5 @@
 .env
-models/LR.pickle
-models/vectoriser-ngram-(1,2).pickle
+models/*
 dataset/processed_tweet_dataset.csv
 graphs/*
 Report.html
