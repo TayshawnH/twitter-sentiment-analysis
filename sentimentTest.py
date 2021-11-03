@@ -107,7 +107,5 @@ if __name__ == "__main__":
             lists_from_csv.append(row[0])
 
     df = predict(vectoriser, LRmodel, lists_from_csv, file_names)
-    # convert the dataframe to a csv file
-    print(df.to_csv("predictions.csv", index=False))
 
     print(df)
