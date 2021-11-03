@@ -21,4 +21,11 @@ Rename training data to "processed_tweet_dataset.csv".
 
 ## Step 3: Create Model
 
+<<<<<<< HEAD
 Run "training_model_LR.py"
+=======
+Run "training_model_LR.py"
+
+
+
+>>>>>>> eb88bf445304f70fda48d33bb7e482c400e6835a
