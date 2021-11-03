@@ -91,7 +91,7 @@ LRmodel = LogisticRegression(C = 2, max_iter = 1000, n_jobs=-1)
 LRmodel.fit(X_train, y_train)
 model_Evaluate(LRmodel)
 
-file = open('models/L1.pickle', 'wb')
+file = open('models/LR.pickle', 'wb')
 pickle.dump(LRmodel, file)
 file.close()
 
