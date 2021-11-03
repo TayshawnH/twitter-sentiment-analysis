@@ -31,7 +31,7 @@ def predict(vectoriser, model, text, file_names=None):
     # Convert the list into a Pandas DataFrame.
     df = pd.DataFrame(data, columns=['text', 'sentiment'])
 
-    # creating a new column for file names here.
+    # Creating a new column for file names here.
     # it will take a list of files names
     df.insert(2, "file", file_names, True)
     df = df.replace([0, 1], ["Negative", "Positive"])
@@ -107,4 +107,7 @@ if __name__ == "__main__":
             lists_from_csv.append(row[0])
 
     df = predict(vectoriser, LRmodel, lists_from_csv, file_names)
+    # convert the dataframe to a csv file
+    print(df.to_csv("predictions.csv", index=False))
+
     print(df)

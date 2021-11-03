@@ -4,4 +4,4 @@ dataset/processed_tweet_dataset.csv
 graphs/*
 Report.html
 !graphs/.gitkeep
-
+.idea/*

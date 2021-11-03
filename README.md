@@ -1,10 +1,6 @@
-# COMP 496: Senior Project
+# Twitter Sentiment Analysis 
 
-Team: a.out
-
-Project: games++
-
-Project Overview: We will create a Sentiment Analysis program that analyzes the top streamed games on Twitch, then queries those games on Twitter to display a profile on the gaming community. 
+Better readme to come :> ! 
 
 ## Step 1:  Install requirements
 ```bash
@@ -21,11 +17,4 @@ Rename training data to "processed_tweet_dataset.csv".
 
 ## Step 3: Create Model
 
-<<<<<<< HEAD
 Run "training_model_LR.py"
-=======
-Run "training_model_LR.py"
-
-
-
->>>>>>> eb88bf445304f70fda48d33bb7e482c400e6835a
