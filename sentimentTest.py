@@ -3,6 +3,7 @@ import glob
 import csv
 import pandas as pd
 import matplotlib.pyplot as plt
+import re
 
 def load_models():
     # Load the vectoriser.
@@ -36,7 +37,6 @@ def predict(vectoriser, model, text, file_names=None):
     df.insert(2, "file", file_names, True)
     df = df.replace([0, 1], ["Negative", "Positive"])
 
-    report(df)
 
     return df
 
@@ -44,51 +44,79 @@ def report(df):
 
 
     # write tweet html to file
-    tweetTable = df.to_html()
-    text_file = open("Report.html", "w")
-    text_file.write(' <center> ')
-    text_file.write('<h1> Sentiment Analysis Report: Test Tweets </h1> <br>')
-    text_file.write(' </center> ')
+    path = df['file'].values[0]
+    # TODO: Change the name of the title var to something like 'fileName or fileTitle'
+    # The regex below changes ./game_data/GTA.csv to GTA
+    title = re.sub('.*[/\\\\]', '', path).removesuffix('.csv')
+    text_file = open(title+".html", "w")
 
-    text_file.write('<h2> Test Data </h2>')
-    text_file.write(tweetTable+ '<br> ')
+    html_header = '''
+              <link rel="stylesheet" type="text/css" href="df_style.css"/>
+                {header}
+            '''
+    text_file.write(
+        html_header.format(header=('<h1>'+title+' Sentiment Analysis Report</h1> '), classes='h1'))
 
     # write sentiment frequency html to file
-    text_file.write('<h2> Sentiment Count </h2>')
     count = df.groupby(['sentiment']).count()
-    freq = count.to_html()
-    text_file.write(freq+ ' <br> ')
+    count = count.drop('file', 1)
+    amount = count.to_string()
+    amount = amount.replace('sentiment', '')
+    amount = amount.replace('text', '')
+    amount = amount.replace('Negative', '<b> Negative:  </b> ')
+    amount = amount.replace('Positive', '<b> Positive: </b>')
 
-    # write sentiment percentage html to file
-    text_file.write('<h2> Sentiment Frequency </h2>')
-    perc  = (df.groupby('sentiment').size() / df['sentiment'].count()) * 100
-    perecent = perc.to_string()
-    perecent = perecent.replace('sentiment', '')
-    perecent = perecent.replace('Negative', '<b> Negative:  </b>')
-    perecent = perecent.replace('Positive', '<b> Positive: </b>')
-    text_file.write(perecent+ ' <br> <br> ')
+    html_column = '''
+      <div class="row">
+       <div class="column">
+      <h2><u>Sentiment Frequency</u></h2>
+      <p>{Column1}</p>
+        </div>
 
+        <div class="column" >
+        <h2><u>Sentiment Count</u></h2>
+          <p>{Column2Row1}</p>
+           <br> 
+      <h2><u> 2 Random Tweets with a Positive Sentiment: </u></h2
+          <p>{Column2Row2}</p>
+          <p>{Column2Row3}</p>
+           <br> <br>
+          <h2> <u>2 Random Tweets with a Negative Sentiment: </u></h2>
+          <p>{Column2Row4}</p>
+           <p>{Column2Row5}</p>
 
-    #print highest tweet with negative and positive sentiments
-    text_file.write('<h2> 2 random tweets with a positive sentiment: </h2>')
-    cl = df.loc[df.sentiment == "Positive", ['text']].sample(2).values
-    for c in cl:
-        text_file.write(c[0]+ ' <br> ')
+        </div>
+      </div>
+      '''
 
+    postiveCount = df.loc[df.sentiment == "Positive", ['text']].sample(2).values
+    negativeCount = df.loc[df.sentiment == "Negative", ['text']].sample(2).values
 
-    text_file.write('<h2> 2 random tweets with a negative sentiment: </h2>')
-    cl = df.loc[df.sentiment == "Negative", ['text']].sample(2).values
-    for c in cl:
-        text_file.write(c[0]+ '<br> ')
-
-
-    s = count.text
+    # create figure
     fig, ax = plt.subplots()
-    s.plot.pie()
-    fig.savefig('graphs/my_plot.png')
+    df.groupby('sentiment').size().plot(kind='pie', explode=(0, 0.1),
+                                        colors=['red','green'],labels= ['Negative', 'Positive'],
+                                        shadow = True,
+                                        autopct='%.1f%%')
+    ax.set_ylabel('')
+    fig.savefig('graphs/'+title+'.png')
+    plt.close(fig)
 
-    text_file.write(" <img src = "+ '"graphs/my_plot.png"'+' > <br> ')
+    text_file.write(
+        html_column.format(Column1=(" <img  src = " + '"graphs/' + title + '.png"''"> <br> '),
+                           Column2Row1=(amount + ' <br> <br> '), Column2Row2=(postiveCount[0]), Column2Row3=(postiveCount[1]),
+                           Column2Row4=(negativeCount[0]), Column2Row5=(negativeCount[1])
+                           , classes='img'))
 
+    text_file.write('<h2> <u>50 Random Tweets</u> </h2>')
+
+    html_table = '''
+      <body>
+        {table}
+      </body>
+
+    '''
+    text_file.write(html_table.format(table=df.sample(50).drop('file', 1).to_html(classes='mystyle')))
 
     text_file.close()
 
@@ -103,9 +131,13 @@ if __name__ == "__main__":
         file = open(f, "r")
         csv_reader = csv.reader(file)
         for row in csv_reader:
-            file_names.append(f)
+            # found an issue on Windows where the file
+            # path will look like ./game_data\GTA.csv
+            # This replace method will convert replace the '\' with the correct one
+            file_names.append(f.replace('\\', '/'))
             lists_from_csv.append(row[0])
 
     df = predict(vectoriser, LRmodel, lists_from_csv, file_names)
-
+    cl = df.loc[df.file == './game_data/GTA.csv']
+    report(cl)
     print(df)

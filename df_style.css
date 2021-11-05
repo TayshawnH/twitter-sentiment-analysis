@@ -1,0 +1,47 @@
+.mystyle {
+    font-size: 11pt;
+    font-family: Arial;
+    border-collapse: collapse;
+    border: 3px solid silver;
+
+}
+
+.mystyle td, th {
+    padding: 5px;
+}
+
+.mystyle tr:nth-child(even) {
+    background: #E0E0E0;
+}
+
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+h1 {
+    margin-left: auto;
+    margin-right: auto;
+    background-color: grey;
+    padding: 10px;
+    text-align: center;
+    color: white;}
+
+ * {
+  box-sizing: border-box;
+
+}
+
+
+.column {
+  float: left;
+  width: 50%;
+
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
