@@ -3,7 +3,7 @@ import glob
 import csv
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import re
 
 def load_models():
     # Load the vectoriser.
@@ -45,8 +45,9 @@ def report(df):
 
     # write tweet html to file
     path = df['file'].values[0]
-    name = path[path.rindex('/')+1:]
-    title = name.removesuffix('.csv')
+    # TODO: Change the name of the title var to something like 'fileName or fileTitle'
+    # The regex below changes ./game_data/GTA.csv to GTA
+    title = re.sub('.*[/\\\\]', '', path).removesuffix('.csv')
     text_file = open(title+".html", "w")
 
     html_header = '''
@@ -130,10 +131,13 @@ if __name__ == "__main__":
         file = open(f, "r")
         csv_reader = csv.reader(file)
         for row in csv_reader:
-            file_names.append(f)
+            # found an issue on Windows where the file
+            # path will look like ./game_data\GTA.csv
+            # This replace method will convert replace the '\' with the correct one
+            file_names.append(f.replace('\\', '/'))
             lists_from_csv.append(row[0])
 
     df = predict(vectoriser, LRmodel, lists_from_csv, file_names)
-    cl = df.loc[df.file == './game_data/Minecraft.csv']
+    cl = df.loc[df.file == './game_data/GTA.csv']
     report(cl)
     print(df)
