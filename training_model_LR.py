@@ -2,8 +2,9 @@ import re
 import pickle
 import pandas as pd
 from nltk.stem import WordNetLemmatizer
-import nltk
-nltk.download('wordnet')
+# un-comment both of these if this give an error after you run the program.
+# import nltk
+# nltk.download('wordnet')
 import time
 
 from sklearn.linear_model import LogisticRegression
