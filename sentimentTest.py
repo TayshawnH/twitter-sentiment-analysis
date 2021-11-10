@@ -1,3 +1,4 @@
+import os
 import pickle
 import glob
 import csv
@@ -40,7 +41,7 @@ def predict(vectoriser, model, text, file_names=None):
 
     return df
 
-def report(df):
+def report(df, name):
 
 
     # write tweet html to file
@@ -48,14 +49,14 @@ def report(df):
     # TODO: Change the name of the title var to something like 'fileName or fileTitle'
     # The regex below changes ./game_data/GTA.csv to GTA
     title = re.sub('.*[/\\\\]', '', path).removesuffix('.csv')
-    text_file = open(title+".html", "w")
+    text_file = open(name+".html", "w")
 
     html_header = '''
               <link rel="stylesheet" type="text/css" href="df_style.css"/>
                 {header}
             '''
     text_file.write(
-        html_header.format(header=('<h1>'+title+' Sentiment Analysis Report</h1> '), classes='h1'))
+        html_header.format(header=('<h1>'+name+' Sentiment Analysis Report</h1> '), classes='h1'))
 
     # write sentiment frequency html to file
     count = df.groupby(['sentiment']).count()
@@ -99,11 +100,11 @@ def report(df):
                                         shadow = True,
                                         autopct='%.1f%%')
     ax.set_ylabel('')
-    fig.savefig('graphs/'+title+'.png')
+    fig.savefig('graphs/'+name+'.png')
     plt.close(fig)
 
     text_file.write(
-        html_column.format(Column1=(" <img  src = " + '"graphs/' + title + '.png"''"> <br> '),
+        html_column.format(Column1=(" <img  src = " + '"graphs/' + name + '.png"''"> <br> '),
                            Column2Row1=(amount + ' <br> <br> '), Column2Row2=(postiveCount[0]), Column2Row3=(postiveCount[1]),
                            Column2Row4=(negativeCount[0]), Column2Row5=(negativeCount[1])
                            , classes='img'))
@@ -117,8 +118,38 @@ def report(df):
 
     '''
     text_file.write(html_table.format(table=df.sample(50).drop('file', 1).to_html(classes='mystyle')))
-
+    print("HTML report location:  "+ os.path.realpath(text_file.name))
     text_file.close()
+
+def print_menu():
+    print("Here are the files you can conduct an sentiment analysis on: ")
+    i = 0
+    for file in glob.glob(path):
+        file = re.sub('.*[/\\\\]', '', file.removesuffix('.csv'))
+        print( str(i)+" : "+ file)
+        choices.append(i)
+        i=i+1
+
+    print(str(choices[-1]+1) +" : All of the above")
+
+def check_option():
+
+    try:
+        option = int(input('Enter your choice: '))
+    except:
+        print('Wrong input. Please enter a number ...')
+
+    if option in choices:
+        filepath = glob.glob(path)[option]
+        cl = df.loc[df.file == filepath]
+        title = re.sub('.*[/\\\\]', '', filepath.removesuffix('.csv'))
+        report(cl, title)
+
+    elif option == choices[-1]+1:
+        report(df, "Comprehensive")
+    else:
+        print('Invalid option. Please enter a number between 0 and '+ choices[-1]+1+'.')
+
 
 if __name__ == "__main__":
     # Loading the models.
@@ -138,6 +169,7 @@ if __name__ == "__main__":
             lists_from_csv.append(row[0])
 
     df = predict(vectoriser, LRmodel, lists_from_csv, file_names)
-    cl = df.loc[df.file == './game_data/GTA.csv']
-    report(cl)
-    print(df)
+    choices = []
+    print_menu()
+    check_option()
+
