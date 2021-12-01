@@ -7,9 +7,6 @@ load_dotenv()
 
 
 class TwitterClient(object):
-    '''
-    Generic Twitter Class for sentiment analysis.
-    '''
 
     def __init__(self):
         '''

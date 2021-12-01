@@ -37,11 +37,9 @@ def predict(vectoriser, model, text, file_names=None):
     df.insert(2, "file", file_names, True)
     df = df.replace([0, 1], ["Negative", "Positive"])
 
-
     return df
 
 def report(df):
-
 
     # write tweet html to file
     path = df['file'].values[0]

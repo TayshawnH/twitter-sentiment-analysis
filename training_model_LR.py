@@ -3,16 +3,16 @@ import pickle
 import pandas as pd
 from nltk.stem import WordNetLemmatizer
 # un-comment both of these if this give an error after you run the program.
-# import nltk
-# nltk.download('wordnet')
+import nltk
+nltk.download('wordnet')
+nltk.download('stopwords')
 import time
-
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import confusion_matrix, classification_report
 
-# Importing the dataset
+# Importing the dataset from kaggle
 DATASET_COLUMNS = ["sentiment", "ids", "date", "flag", "user", "text"]
 DATASET_ENCODING = "ISO-8859-1"
 dataset = pd.read_csv('dataset/processed_tweet_dataset.csv',
@@ -26,78 +26,80 @@ dataset['sentiment'] = dataset['sentiment'].replace(4, 1)
 # Storing data in lists.
 text, sentiment = list(dataset['text']), list(dataset['sentiment'])
 
-# this util is used in our twitter_data.py
-def clean_tweet(tweet):
-    '''
-    Utility function to clean tweet text by removing links, special characters
-    using simple regex statements.
-    '''
-    return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
-
 
 def preprocess(textdata):
-    processedText = []
+    processed_text = []
 
-    # Create Lemmatizer and Stemmer.
-    wordLemm = WordNetLemmatizer()
+    # Create Lemmatizer.
+    lemmatizer = WordNetLemmatizer()
 
     for tweet in textdata:
         tweet = tweet.lower()
-        clean_tweet(tweet)
+        tweet = re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z])|(\w+:\/\/\S+)|((http://)[^ ]*|(https://)[^ ]*|( www\.)[^ ]*)", " ", tweet)
         tweet_words = ''
-        for word in tweet.split():
-            # Checking if the word is a stopword.
+        for word in tweet.split(): 
             if len(word) > 1:
                 # Lemmatizing the word.
-                word = wordLemm.lemmatize(word)
+                word = lemmatizer.lemmatize(word)
                 tweet_words += (word + ' ')
+        processed_text.append(tweet_words)
 
-        processedText.append(tweet_words)
+    return processed_text
 
-    return processedText
 
 t = time.time()
-processedtext = preprocess(text)
+processedText = preprocess(text)
 print(f'Text Preprocessing complete.')
 print(f'Time Taken: {round(time.time()-t)} seconds')
 
-X_train, X_test, y_train, y_test = train_test_split(processedtext, sentiment,
-                                                    test_size = 0.05, random_state = 0)
-print(f'Data Split done.')
 
-vectoriser = TfidfVectorizer(ngram_range=(1,2), max_features=500000)
+X_train, X_test, y_train, y_test = train_test_split(processedText, sentiment,
+                                                    test_size=0.05, random_state=0)
+print(f'Data Split complete.')
+
+vectoriser = TfidfVectorizer(ngram_range=(1, 3), max_features=500000)
 vectoriser.fit(X_train)
-print(f'Vectoriser fitted.')
+print(f'Vectoriser has been fitted.')
 
 X_train = vectoriser.transform(X_train)
 X_test = vectoriser.transform(X_test)
+# print the shape of the training and test data
+print(X_train.shape)
+print(X_test.shape)
 print(f'Data Transformed.')
 
 
-def model_Evaluate(model):
+def model_evaluate(model):
     # Predict values for Test dataset
     y_pred = model.predict(X_test)
 
     # Print the evaluation metrics for the dataset.
     print(classification_report(y_test, y_pred))
 
-    # Compute the Confusion matrix
-    cf_matrix = confusion_matrix(y_test, y_pred)
-
-    print(cf_matrix)
+    # Compute the Confusion matrix and label the true and false positives.
+    matrix = confusion_matrix(y_test, y_pred)
+    labels = pd.Series(['Negative', 'Positive'])
+    df_cm = pd.DataFrame(matrix, columns="Predicted " + labels, index="Is " + labels).div(matrix.sum(axis=1), axis=0)
+    print(df_cm)
 
 
 # Logistic Regression
 # by default the L2 Regularization technique is used
 # this is applied to avoid over-fitting
-LRmodel = LogisticRegression(C = 2, max_iter = 1000, n_jobs=-1)
-LRmodel.fit(X_train, y_train)
-model_Evaluate(LRmodel)
+LRmodel = LogisticRegression(max_iter=1000, n_jobs=-1)
 
-file = open('models/LR.pickle', 'wb')
+# Fit the model according to the given training data
+# X_train : {array-like, sparse matrix} of shape (n_samples, n_features)
+# Training vector, where n_samples is the number of samples and n_features is the number of features.
+# y_train : array-like of shape (n_samples)
+# Target vector relative to X_train
+LRmodel.fit(X_train, y_train)
+model_evaluate(LRmodel)
+
+file = open('models/LR-V2.pickle', 'wb')
 pickle.dump(LRmodel, file)
 file.close()
 
-file = open('models/vectoriser-ngram-(1,2).pickle', 'wb')
+file = open('models/vectoriser-ngram-(1,3).pickle', 'wb')
 pickle.dump(vectoriser, file)
 file.close()
