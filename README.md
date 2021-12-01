@@ -1,6 +1,5 @@
 # Twitter Sentiment Analysis 
 
-Better readme to come :> ! 
 
 ## Step 1:  Install requirements
 ```bash

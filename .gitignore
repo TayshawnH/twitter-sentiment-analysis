@@ -5,3 +5,4 @@ graphs/*
 Report.html
 !graphs/.gitkeep
 .idea/*
+*.html
