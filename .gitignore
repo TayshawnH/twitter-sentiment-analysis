@@ -7,3 +7,4 @@ Report.html
 !models/.gitkeep
 !dataset/.gitkeep
 .idea/*
+*.html
