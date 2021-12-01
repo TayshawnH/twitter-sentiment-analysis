@@ -143,8 +143,8 @@ def report(df, name):
 # convert dataframe to csv and save file to Prediction folder
 def convert_to_csv(df, name):
     # create a new csv file in the Prediction folder
-    df.to_csv('Prediction/' + name + '.csv', index=False)
-    print(os.path.abspath('Prediction/' + name + '.csv'))
+    df.to_csv('Predictions/' + name + '.csv', index=False)
+    print(os.path.abspath('Predictions/' + name + '.csv'))
 
 
 choices = []
