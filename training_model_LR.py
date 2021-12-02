@@ -11,6 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.model_selection import cross_val_score
 
 # Importing the dataset from kaggle
 DATASET_COLUMNS = ["sentiment", "ids", "date", "flag", "user", "text"]
@@ -86,7 +87,7 @@ def model_evaluate(model):
 # Logistic Regression
 # by default the L2 Regularization technique is used
 # this is applied to avoid over-fitting
-LRmodel = LogisticRegression(max_iter=1000, n_jobs=-1)
+LRmodel = LogisticRegression(max_iter=1000, n_jobs=-1, C=2)
 
 # Fit the model according to the given training data
 # X_train : {array-like, sparse matrix} of shape (n_samples, n_features)
