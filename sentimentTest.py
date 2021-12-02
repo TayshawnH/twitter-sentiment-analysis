@@ -161,11 +161,6 @@ def print_menu():
 
     print(str(choices[-1]+1) +" : Comprehensive Report")
 
-<<<<<<< HEAD
-=======
-
-def check_option():
->>>>>>> 71732c1435351aa270da5d8d05807cc13bcfbdbb
 
 def check_option():
     try:
