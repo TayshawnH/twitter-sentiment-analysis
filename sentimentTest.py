@@ -151,6 +151,7 @@ def print_menu():
 
     print(str(choices[-1]+1) +" : Comprehensive Report")
 
+
 def check_option():
 
     try:
@@ -160,6 +161,10 @@ def check_option():
 
     if option in choices:
         filepath = glob.glob(path)[option]
+        # found an issue on Windows where the file
+        # path will look like ./game_data\GTA.csv
+        # This replace method will convert replace the '\' with the correct one
+        filepath = filepath.replace('\\', '/')
         cl = df.loc[df.file == filepath]
         title = re.sub('.*[/\\\\]', '', filepath.removesuffix('.csv'))
         report(cl, title)
@@ -185,7 +190,7 @@ if __name__ == "__main__":
         file = open(f, "r")
         csv_reader = csv.reader(file)
         for row in csv_reader:
-            # found an issue on Windows where the file
+            # Same issue from above :/
             # path will look like ./game_data\GTA.csv
             # This replace method will convert replace the '\' with the correct one
             file_names.append(f.replace('\\', '/'))
