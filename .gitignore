@@ -7,5 +7,6 @@ Report.html
 !graphs/.gitkeep
 !models/.gitkeep
 !dataset/.gitkeep
+!Predictions/.gitkeep
 .idea/*
 *.html
