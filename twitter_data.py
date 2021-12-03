@@ -7,14 +7,8 @@ load_dotenv()
 
 
 class TwitterClient(object):
-    '''
-    Generic Twitter Class for sentiment analysis.
-    '''
 
     def __init__(self):
-        '''
-        Class constructor or initialization method.
-        '''
         # keys and tokens from the Twitter Dev Console
         consumer_key = os.getenv("API_KEY")
         consumer_secret = os.getenv("API_SECRET")
@@ -33,16 +27,9 @@ class TwitterClient(object):
             print("Error: Authentication Failed")
 
     def clean_tweet(self, tweet):
-        '''
-        Utility function to clean tweet text by removing links, special characters
-        using simple regex statements.
-        '''
-        return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
+        return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)|(rt\s)|(RT\s)", " ", tweet).split())
 
     def get_tweets(self, query, count):
-        '''
-        Main function to fetch tweets and parse them.
-        '''
         # empty list to store parsed tweets
         tweets = []
 
@@ -51,12 +38,12 @@ class TwitterClient(object):
             fetched_tweets = tweepy.Cursor(self.api.search, q=query,
                                            include_entities=True,
                                            tweet_mode='extended',
-                                           since="2021-01-01",
+                                           # since="2021-01-01",
                                            lang="en").items(count)
 
             # parsing tweets one by one
             for tweet in fetched_tweets:
-                print(tweet.retweet_count)
+                print(tweet.full_text)
                 parsed_tweet = self.clean_tweet(tweet.full_text)
                 # print(tweet.retweet_count)
                 # appending parsed tweet to tweets list
@@ -76,11 +63,12 @@ class TwitterClient(object):
 
 def main():
     api = TwitterClient()
-    tweets = api.get_tweets(query="league of legends", count=1500)
+    query = 'Valorant'
+    tweets = api.get_tweets(query=query, count=1500)
     # print(tweets)
     for tweet in enumerate(tweets):
         # print(idx, tweet["text"])
-        with open('game_data/League.csv', 'a', newline='') as f:
+        with open(f'game_data/{query}.csv', 'a', newline='') as f:
             f.write("%s\n" % tweet[1])
 
 

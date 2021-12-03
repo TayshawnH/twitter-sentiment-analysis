@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import re
 
+
 def load_models():
     # Load the vectoriser.
     file = open('models/vectoriser-ngram-(1,2).pickle', 'rb')
@@ -37,7 +38,6 @@ def predict(vectoriser, model, text, file_names=None):
     # it will take a list of files names
     df.insert(2, "file", file_names, True)
     df = df.replace([0, 1], ["Negative", "Positive"])
-
 
     return df
 
@@ -140,12 +140,22 @@ def report(df, name):
         print(os.path.abspath(text_file.name))
 
 
+# convert dataframe to csv and save file to Prediction folder
+def convert_to_csv(df, name):
+    # create a new csv file in the Prediction folder
+    df.to_csv('Predictions/' + name + '.csv', index=False)
+    print(os.path.abspath('Predictions/' + name + '.csv'))
+
+
+choices = []
+
+
 def print_menu():
     print("Here are the files you can conduct an sentiment analysis on: ")
     i = 0
     for file in glob.glob(path):
         file = re.sub('.*[/\\\\]', '', file.removesuffix('.csv'))
-        print( str(i)+" : "+ file)
+        print(str(i)+" : "+ file)
         choices.append(i)
         i=i+1
 
@@ -153,7 +163,6 @@ def print_menu():
 
 
 def check_option():
-
     try:
         option = int(input('Enter your choice: '))
     except:
@@ -168,9 +177,13 @@ def check_option():
         cl = df.loc[df.file == filepath]
         title = re.sub('.*[/\\\\]', '', filepath.removesuffix('.csv'))
         report(cl, title)
+        convert_to_csv(cl, title)
+        print('Report created')
 
     elif option == choices[-1]+1:
         report(df, "Comprehensive")
+        convert_to_csv(df, "Comprehensive")
+        print('Report created')
     else:
         print(' ')
         print('Invalid option ...')
@@ -197,7 +210,6 @@ if __name__ == "__main__":
             lists_from_csv.append(row[0])
 
     df = predict(vectoriser, LRmodel, lists_from_csv, file_names)
-    choices = []
     print_menu()
     check_option()
 
